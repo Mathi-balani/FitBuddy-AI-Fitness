@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitBuddy | Your Plan</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" href="/">
+        <span class="brand-mark">FB</span>
+        <span>FitBuddy</span>
+    </a>
+    <nav>
+        <a href="/">New Plan</a>
+        <a href="/view-all-users">Coach Dashboard</a>
+        <a href="/docs">API Docs</a>
+    </nav>
+</header>
+
+<main class="container">
+    <section class="result-hero">
+        <div>
+            <span class="eyebrow">YOUR PERSONALIZED PLAN</span>
+            <h1>Hi {{ user.name }}.</h1>
+            <p>Goal: <strong>{{ user.goal }}</strong> · Intensity: <strong>{{ user.intensity }}</strong> · {{ user.weight }} kg</p>
+        </div>
+        <a class="secondary" href="/">Create Another</a>
+    </section>
+
+    <section class="plan-header">
+        <div class="plan-heading"><span class="eyebrow">YOUR 7-DAY RHYTHM</span><span class="pill source-pill">{{ plan.get('_source', 'Saved plan') }}</span></div>
+        <h2>{{ plan.title }}</h2>
+        <p>{{ plan.overview }}</p>
+        {% if plan.get('_source') == 'built-in fallback' %}
+        <p class="notice">Gemini was unavailable for this request, so FitBuddy created this plan offline. Check your API key, model access, and connection to restore AI generation.</p>
+        {% endif %}
+    </section>
+
+    <section class="days-grid">
+        {% for day in plan.days %}
+        <article class="day-card">
+            <div class="day-top">
+                <span class="day-number">{{ loop.index }}</span>
+                <div>
+                    <span class="eyebrow">{{ day.day }}</span>
+                    <h3>{{ day.focus }}</h3>
+                </div>
+            </div>
+            <div class="mini-section">
+                <strong>Warm-up</strong>
+                <p>{{ day.warm_up }}</p>
+            </div>
+            <div class="mini-section">
+                <strong>Main workout</strong>
+                <ul>
+                    {% for exercise in day.exercises %}
+                    <li>{{ exercise }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="mini-section">
+                <strong>Cooldown</strong>
+                <p>{{ day.cooldown }}</p>
+            </div>
+        </article>
+        {% endfor %}
+    </section>
+
+    <section class="tip-card">
+        <span class="eyebrow">NUTRITION / RECOVERY</span>
+        <h2>One useful habit</h2>
+        <p>{{ nutrition_tip }}</p>
+    </section>
+
+    <section class="feedback-shell">
+        <div>
+            <span class="eyebrow">STEP 02</span>
+            <h2>Refine your plan with AI</h2>
+            <p>Try feedback such as “add more cardio” or “include an extra rest day.”</p>
+        </div>
+        <form method="post" action="/submit-feedback">
+            <input type="hidden" name="user_id" value="{{ user.user_id }}">
+            <textarea name="feedback" required maxlength="1000" placeholder="Tell FitBuddy what you want to change..."></textarea>
+            <button class="primary" type="submit"><span>Update my plan</span><span aria-hidden="true">→</span></button>
+        </form>
+    </section>
+
+    {% if updated_plan %}
+    <section class="updated-shell">
+        <div class="section-title">
+            <div>
+                <span class="eyebrow">AI REVISION</span>
+                <h2>Updated plan</h2>
+            </div>
+        </div>
+        <p class="feedback-label"><strong>Your feedback:</strong> {{ feedback }}</p>
+        {% if revision_notice %}<p class="notice">{{ revision_notice }}</p>{% endif %}
+        <div class="plan-heading"><span class="eyebrow">REVISED WEEK</span><span class="pill source-pill">{{ updated_plan.get('_source', 'Updated plan') }}</span></div>
+        <div class="days-grid">
+            {% for day in updated_plan.days %}
+            <article class="day-card updated">
+                <div class="day-top">
+                    <span class="day-number">{{ loop.index }}</span>
+                    <div>
+                        <span class="eyebrow">{{ day.day }}</span>
+                        <h3>{{ day.focus }}</h3>
+                    </div>
+                </div>
+                <div class="mini-section"><strong>Warm-up</strong><p>{{ day.warm_up }}</p></div>
+                <div class="mini-section"><strong>Main workout</strong>
+                    <ul>{% for exercise in day.exercises %}<li>{{ exercise }}</li>{% endfor %}</ul>
+                </div>
+                <div class="mini-section"><strong>Cooldown</strong><p>{{ day.cooldown }}</p></div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <p class="disclaimer">{{ plan.safety_note }}</p>
+</main>
+</body>
+</html>

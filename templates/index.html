@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitBuddy | AI Fitness Plan Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" href="/">
+        <span class="brand-mark">FB</span>
+        <span>FitBuddy</span>
+    </a>
+    <nav>
+        <a href="/">Create Plan</a>
+        <a href="/view-all-users">Coach Dashboard</a>
+        <a href="/docs">API Docs</a>
+    </nav>
+</header>
+
+<main class="container">
+    <section class="hero">
+        <div>
+            <span class="eyebrow">YOUR WEEK, WELL TRAINED</span>
+            <h1>Make movement<br><span>work for you.</span></h1>
+            <p>A practical seven-day plan shaped around your goal, your pace, and the time you have today.</p>
+        </div>
+        <div class="hero-card">
+            <div class="hero-card-top"><span class="eyebrow">FITBUDDY / WEEKLY RHYTHM</span><span class="hero-mark">FB</span></div>
+            <strong>Small steps.<br>Strong weeks.</strong>
+            <div class="week-bars" aria-label="A balanced seven-day training week"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="hero-card-foot"><span>01 / TRAIN</span><span>02 / RECOVER</span><span>03 / REPEAT</span></div>
+        </div>
+    </section>
+
+    {% if error %}
+    <div class="alert">{{ error }}</div>
+    {% endif %}
+
+    <section class="form-shell">
+        <div class="section-title">
+            <div>
+                <span class="eyebrow">STEP 01</span>
+                <h2>Tell FitBuddy about you</h2>
+            </div>
+            <span class="status-dot"><span></span> Ready when you are</span>
+        </div>
+
+        <form method="post" action="/generate-workout" class="form-grid">
+            <label>
+                Name
+                <input name="name" required minlength="2" placeholder="e.g. Sakthivel">
+            </label>
+
+            <label>
+                User ID
+                <input name="user_id" required minlength="2" placeholder="e.g. FIT001">
+            </label>
+
+            <label>
+                Age
+                <input name="age" type="number" min="13" max="100" required placeholder="28">
+            </label>
+
+            <label>
+                Weight (kg)
+                <input name="weight" type="number" min="20" max="300" step="0.1" required placeholder="70">
+            </label>
+
+            <label class="wide">
+                Fitness Goal
+                <select name="goal" required>
+                    <option value="">Select your goal</option>
+                    <option>Weight Loss</option>
+                    <option>Muscle Gain</option>
+                    <option>General Wellness</option>
+                    <option>Strength</option>
+                    <option>Flexibility</option>
+                    <option>Cardio Fitness</option>
+                </select>
+            </label>
+
+            <label class="wide">
+                Workout Intensity
+                <select name="intensity" required>
+                    <option value="">Select intensity</option>
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                </select>
+            </label>
+
+            <button class="primary wide" type="submit"><span>Build my 7-day plan</span><span aria-hidden="true">→</span></button>
+        </form>
+
+        <p class="disclaimer">
+            FitBuddy provides general wellness and fitness information, not medical advice.
+            Stop if an exercise causes pain and seek qualified professional guidance for medical,
+            injury, pregnancy, or other individual health concerns.
+        </p>
+    </section>
+</main>
+</body>
+</html>
